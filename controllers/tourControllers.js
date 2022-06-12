@@ -13,7 +13,6 @@ exports.getAllTours = async (req, res) => {
         // get queryObj looking =>{ difficulty: 'easy', duration: { $gte: 5 } }
         let queryStr = JSON.stringify(queryObj)
         queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, match => `$${match}`)
-
         let query = Tour.find(JSON.parse(queryStr))
 
         // 2) Sorting
@@ -32,6 +31,18 @@ exports.getAllTours = async (req, res) => {
             query = query.select('-__v')
         }
 
+        // 4) Pagination
+        const page = req.query.page * 1 || 1;
+        const limit = req.query.limit * 1 || 100;
+        const skip = (page - 1) * limit;
+
+// page=2&limit=10, 1-10n  => page 1, 11-20 => page 2
+        query = query.skip(skip).limit(limit)
+
+        if (req.query.page) {
+            const numTours = await  Tour.countDocuments();
+            if(skip >= numTours) throw new Error('This page does not exist');
+        }
         //EXECUTE
         const tours = await query;
         // const query = Tour.find()
