@@ -4,7 +4,7 @@
   "description": "natours backend",
   "main": "app.js",
   "scripts": {
-    "prod": "NODE_ENV=production nodemon server.js",
+    "prod": " nodemon server.js",
     "start": "nodemon server.js"
   },
   "author": "",
