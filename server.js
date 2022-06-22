@@ -13,7 +13,8 @@ const app = require('./app')
 const DB = process.env.DATABASE
 
 mongoose.connect(DB, {
-    useFindAndModify: true
+    useNewUrlParser: true,
+    useUnifiedTopology: true
 }).then(() => console.log('DB connection successful!'))
 
 // Start Server
