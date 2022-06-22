@@ -11,8 +11,11 @@ const signToken = id => {
 }
 
 exports.signup = catchAsync(async (req, res, next) => {
-    const {name, email, photo, password, passwordConfirm} = req.body ;
-    const newUser = await User.create({name, email, photo, password, passwordConfirm});
+    const {name, email, photo, password, passwordConfirm, passwordChangedAt} = req.body ;
+    const newUser = await User.create({
+        name, email, photo, password,
+        passwordConfirm, passwordChangedAt
+    });
 
     const token = signToken(newUser._id);
 
@@ -62,32 +65,25 @@ exports.protect = catchAsync(async (req, res, next) => {
         return next(
             new AppError('You are not logged in! Please log in to get access', 401))
     }
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // // 2) verification of token
-    // console.log(jwt.verify)
-    // console.log(token)
-    // console.log(process.env.JWT_SECRET)
-    // const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
-    // const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    //  console.log(decoded)
+    // 2) verification of token
+    const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
 
-    // // 3) check if user still exist
-    // const freshUser = await User.findById(decoded.id);
-    // if(!freshUser) {
-    //     return  next(
-    //         new AppError('The user with this token no longer exist.', 401)
-    //     )
-    // }
+    // 3) check if user still exist
+    const currentUser = await User.findById(decoded.id);
+    if(!currentUser) {
+        return  next(
+            new AppError('The user with this token no longer exist.', 401)
+        )
+    }
 
-    // // 4) check if user changed password after token was issued
-    // if (freshUser.changedPasswordAfter(decoded.iat)) {
-    //     return next(
-    //         new AppError('User recently changed password! Please log in again.', 401)
-    //     );
-    // }
+    // 4) check if user changed password after token was issued
+    if (currentUser.changedPasswordAfter(decoded.iat)) {
+        return next(
+            new AppError('User recently changed password! Please log in again.', 401)
+        );
+    }
     // // Grant access to protected route
-    // req.user = freshUser;
-
+    req.user = currentUser;
     next()
 });
