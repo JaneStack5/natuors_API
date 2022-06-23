@@ -11,10 +11,11 @@ const signToken = id => {
 }
 
 exports.signup = catchAsync(async (req, res, next) => {
-    const {name, email, photo, password, passwordConfirm, passwordChangedAt, role} = req.body ;
+    const {name, email, photo, password, passwordConfirm, passwordChangedAt,
+        role, passwordResetToken, passwordResetExpires} = req.body ;
     const newUser = await User.create({
-        name, email, photo, password,
-        passwordConfirm, passwordChangedAt, role
+        name, email, photo, password, passwordConfirm,
+        passwordChangedAt, role, passwordResetToken, passwordResetExpires
     });
 
     const token = signToken(newUser._id);
@@ -99,3 +100,96 @@ exports.restrictTO = (...roles) => {
         next();
     }
 }
+
+exports.forgotPassword = catchAsync( async(req, res, next) => {
+    // 1)Get user based on posted email
+    const user = await User.findOne({ email: req.body.email});
+    if (!user) {
+        return next(new AppError('There is no user with this email address.', 404));
+    }
+
+    // 2) Generate the random rest toke
+    const resetToken = await user.createPasswordResetToken();
+
+    // console.log('Token', resetToken)
+
+    await user.save( {validateBeforeSave: false});
+
+    // 3) Send it to users email
+    const resetURL = `${req.protocol}://${req.get(
+        'host'
+    )}/api/v1/users/resetPassword/${resetToken}`;
+
+
+    const data = {
+        url: resetURL
+    }
+
+    try {
+
+        await new Email(user, data).sendPasswordReset();
+
+        res.status(200).json({
+            status: 'Success',
+            message: 'Token sent to email!'
+        });
+    } catch(e) {
+
+        //console.log(e)
+
+        user.passwordResetToken = undefined;
+        user.passwordResetExpires = undefined;
+        await user.save( {validateBeforeSave: false});
+
+        return next(
+            new AppError('There was an error sending the email, Try again later!', 500)
+        )
+
+    }
+})
+
+exports.forgotPassword = catchAsync( async(req, res, next) => {
+    // 1)Get user based on posted email
+    const { email} = req.body
+    const user = await User.findOne({ email});
+    if (!user) {
+        return next(new AppError('There is no user with this email address.', 404));
+    }
+
+    // 2) Generate the random rest toke
+    const resetToken = await user.createPasswordResetToken();
+    console.log('Token', resetToken)
+    await user.save( {validateBeforeSave: false});
+
+//     // 3) Send it to users email
+//     const resetURL = `${req.protocol}://${req.get(
+//         'host'
+//     )}/api/v1/users/resetPassword/${resetToken}`;
+//
+//
+//     const data = {
+//         url: resetURL
+//     }
+//
+//     try {
+//
+//         await new Email(user, data).sendPasswordReset();
+//
+//         res.status(200).json({
+//             status: 'Success',
+//             message: 'Token sent to email!'
+//         });
+//     } catch(e) {
+//         //console.log(e)
+//         user.passwordResetToken = undefined;
+//         user.passwordResetExpires = undefined;
+//         await user.save( {validateBeforeSave: false});
+//
+//         return next(
+//             new AppError('There was an error sending the email, Try again later!', 500)
+//         )
+//
+//     }
+})
+
+exports.resetPassword = (req, res, next) => {}
