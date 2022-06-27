@@ -2,8 +2,11 @@ const Review = require('./../models/Review')
 const catchAsync = require('./../utils/catchAsync')
 
 exports.createReview = catchAsync(async (req, res, next) => {
-    const { review, rating, createdAt, tour, user } = req.body
-    const newReview = await Review.create({ review, rating, createdAt, tour, user })
+    // Allow nested routes
+    if(!req.body.tour) req.body.tour = req.params.id;
+    if(!req.body.user) req.body.user = req.user.id;
+
+    const newReview = await Review.create(req.body)
     res.status(201).json({
         status: 'success',
         data: {
