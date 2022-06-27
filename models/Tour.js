@@ -114,7 +114,12 @@ const tourSchema = new mongoose.Schema({
         toObject: {virtuals: true}
     });
 
-
+//Virtual populate(populating the parent model)
+tourSchema.virtual('reviews', {
+    ref: 'Review',
+    foreignField: 'tour',
+    localField: '_id'
+});
 
 // Document Middleware: runs before .save() $ .create()
 tourSchema.pre('save', function(next) {
