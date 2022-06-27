@@ -8,7 +8,6 @@ const {
     protect,
     restrictTO
 } = require('../controllers/authController')
-
 const router = express.Router({ mergeParams: true });
 
 router
