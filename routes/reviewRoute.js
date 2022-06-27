@@ -9,13 +9,11 @@ const {
     restrictTO
 } = require('../controllers/authController')
 
-const router = express.Router();
-
+const router = express.Router({ mergeParams: true });
 
 router
     .route('/')
     .get(getAllReviews)
     .post(protect, restrictTO('user'), createReview)
-
 
 module.exports = router;
