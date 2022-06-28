@@ -21,17 +21,17 @@ router.route('/top-5-cheap')
     .get(aliasTopTours, getAllTours)
 
 router.route('/tour-stats').get(getTourStats)
-router.route('/monthly-plan/:year').get(getMonthlyPlan)
+router.route( protect, restrictTO('admin', 'lead-guide', 'guide'), '/monthly-plan/:year').get(getMonthlyPlan)
 
 router
     .route('/')
-    .get(protect, getAllTours)
-    .post(createTour)
+    .get( getAllTours )
+    .post( protect, restrictTO('admin', 'lead-guide'), createTour)
 
 router
     .route('/:id')
     .get(getTour)
-    .patch(updateTour)
+    .patch( protect, restrictTO('admin', 'lead-guide'), updateTour )
     .delete(protect, restrictTO('admin', 'lead-guide'), deleteTour)
 
 module.exports = router;

@@ -16,22 +16,27 @@ const {
     forgotPassword,
     resetPassword,
     updatePassword,
-    protect
+    protect,
+    restrictTO
 } = require('../controllers/authController')
 
 const router = express.Router();
 
 router.post('/signup', signup)
 router.post('/login', login )
-
 router.post('/forgotPassword', forgotPassword)
 router.patch('/resetPassword/:token', resetPassword)
 
-router.patch('/updateMyPassword', protect, updatePassword)
+//To use the protect middleware without repeating yourself
+router.use(protect)
 
-router.patch('/updateMe', protect, updateMe)
-router.delete('/deleteMe', protect, deleteme)
-router.get('/me', protect, getMe)
+router.patch('/updateMyPassword', updatePassword)
+
+router.get('/me', getMe)
+router.patch('/updateMe', updateMe)
+router.delete('/deleteMe', deleteme)
+
+router.use(restrictTO('admin'))
 
 router
     .route('/')

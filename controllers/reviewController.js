@@ -19,7 +19,6 @@ exports.createReview = catchAsync(async (req, res, next) => {
 exports.getAllReviews = catchAsync(async (req, res, next) => {
     let filter = {};
     if (req.params.tourId) filter = { tour: req.params.tourId }
-
     const reviews = await  Review.find(filter);
 
     //SEND RESPONSE
@@ -31,5 +30,33 @@ exports.getAllReviews = catchAsync(async (req, res, next) => {
         }
     })
 });
+
+exports.getReview = catchAsync(async (req, res, next) => {
+    const id = req.params.id
+    const review = await Review.findById(id) //.populate('reviews');
+
+    res.status(200).json({
+        status: 'success',
+        count: review
+    })
+})
+
+exports.updateReview = catchAsync(async (req, res, next) => {
+    const id = req.params.id
+    const review = await Review.findByIdAndUpdate( id, req.body, {
+        new: true,
+        runValidators: true
+    });
+
+    if (!review) {
+        return next(new AppError('No review found with that ID', 404))
+    }
+    res.status(200).json({
+        status: 'success',
+        data: {
+            review
+        }
+    })
+})
 
 exports.deleteReview = deleteOne(Review)
