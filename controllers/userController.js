@@ -1,7 +1,7 @@
 const User = require('./../models/User')
 const catchAsync = require('./../utils/catchAsync')
 const AppError = require('./../utils/appError')
-
+//const { deleteOne } = require('./handlerFactory')
 
 const filterObj = (obj, ...allowedFields) => {
     const newObj = {};
@@ -78,9 +78,12 @@ exports.updateUser = (req, res,) => {
     })
 }
 
-exports.deleteUser = (req, res,) => {
-    res.status(500).json({
-        status: 'error',
-        message: 'This route is not yet defined'
+//exports.deleteUser = deleteOne(User)
+exports.deleteUser = catchAsync(async(req, res,) => {
+    const user = await User.findByIdAndDelete(req.params.id)
+
+    res.status(204).json({
+        status: 'success',
+        message: null
     })
-}
+})

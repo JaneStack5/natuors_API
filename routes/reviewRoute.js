@@ -1,7 +1,8 @@
 const express = require("express");
 const {
     getAllReviews,
-    createReview
+    createReview,
+    deleteReview
 } = require('./../controllers/reviewController')
 
 const {
@@ -14,5 +15,7 @@ router
     .route('/')
     .get(getAllReviews)
     .post(protect, restrictTO('user'), createReview)
+
+router.route('/:id').delete(deleteReview)
 
 module.exports = router;
