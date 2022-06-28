@@ -33,11 +33,13 @@ exports.getAllReviews = catchAsync(async (req, res, next) => {
 
 exports.getReview = catchAsync(async (req, res, next) => {
     const id = req.params.id
-    const review = await Review.findById(id) //.populate('reviews');
+    const review = await Review.findById(id);
 
     res.status(200).json({
         status: 'success',
-        count: review
+        data: {
+            review
+        }
     })
 })
 
