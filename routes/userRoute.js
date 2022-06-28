@@ -6,7 +6,8 @@ const {
     updateUser,
     deleteUser,
     updateMe,
-    deleteme
+    deleteme,
+    getMe
 } = require("../controllers/userController")
 
 const {
@@ -30,6 +31,7 @@ router.patch('/updateMyPassword', protect, updatePassword)
 
 router.patch('/updateMe', protect, updateMe)
 router.delete('/deleteMe', protect, deleteme)
+router.get('/me', protect, getMe)
 
 router
     .route('/')

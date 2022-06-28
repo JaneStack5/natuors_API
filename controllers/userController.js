@@ -23,6 +23,16 @@ exports.getAllUsers = catchAsync(async (req, res, next) => {
     })
 })
 
+exports.getMe = catchAsync(async (req, res, next) => {
+    const id = req.user.id
+    const user   = await User.findById(id);
+
+    res.status(200).json({
+        status: 'success',
+        results: user
+    })
+})
+
 exports.updateMe = catchAsync(async (req, res, next) => {
     // 1)Create error if user Posts password data
     if (req.body.password || req.body.passwordConfirm) {
