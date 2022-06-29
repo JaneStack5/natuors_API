@@ -7,7 +7,8 @@ const {
     deleteTour,
     aliasTopTours,
     getTourStats,
-    getMonthlyPlan
+    getMonthlyPlan,
+    getToursWithin
 } = require("../controllers/tourControllers")
 const { protect, restrictTO} = require('./../controllers/authController')
 const reviewRouter = require('./../routes/reviewRoute')
@@ -22,6 +23,17 @@ router.route('/top-5-cheap')
 
 router.route('/tour-stats').get(getTourStats)
 router.route( protect, restrictTO('admin', 'lead-guide', 'guide'), '/monthly-plan/:year').get(getMonthlyPlan)
+
+router
+    .route('/tours-within/:distance/center/:latlng/unit/:unit')
+    .get( getToursWithin)
+
+// /tours-within?distance=233&center=-40,45&unit=mi
+// /tours-within/233/center/-40,45/unit/mi
+
+// router
+//     .route('/distances/:latlng/unit/:unit')
+//     .get(tourController.getDistances);
 
 router
     .route('/')
