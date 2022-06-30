@@ -11,6 +11,7 @@ const globalErrorHandler = require('./controllers/errorController')
 const tourRouter = require('./routes/tourRoute')
 const userRouter = require('./routes/userRoute')
 const reviewRouter = require('./routes/reviewRoute')
+const bookingRouter = require('./routes/bookingRoute')
 
 const app = express()
 // Global Middlewares
@@ -62,6 +63,7 @@ app.use((req, res, next) => {
 app.use('/api/v1/tours', tourRouter)
 app.use('/api/v1/users', userRouter)
 app.use('/api/v1/reviews', reviewRouter)
+app.use('/api/v1/bookings', bookingRouter)
 
 //Handler for unhandeled routes
 app.all('*', (req, res, next) => {
