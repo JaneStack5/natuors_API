@@ -10,7 +10,7 @@ process.on('unCaughtException', err => {
 dotenv.config({path: './config.env'})
 const app = require('./app')
 
-const DB = process.env.DATABASE
+const DB = process.env.DATABASE_PROD
 
 mongoose.connect(DB, {
     useNewUrlParser: true,
