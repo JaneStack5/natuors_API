@@ -58,3 +58,70 @@ exports.getMyTours = catchAsync(async (req, res, next) => {
 
     res.status(200).render('overview')
 });
+
+exports.createBooking = catchAsync(async (req, res, next) => {
+    const newBooking = await Booking.create(req.body)
+    res.status(201).json({
+        status: 'success',
+        data: {
+            tour: newBooking
+        }
+    })
+});
+
+exports.getAllBookings = catchAsync(async (req, res, next) => {
+    const bookings = await Booking.find()
+
+    //SEND RESPONSE
+    res.status(200).json({
+        status: 'success',
+        count: bookings.length,
+        data: {
+            bookings
+        }
+    })
+});
+
+exports.getBooking = catchAsync(async (req, res, next) => {
+    const booking = await Booking.findById(req.params.id)
+
+    if (!booking) {
+        return next(new AppError('No booking found with that ID', 404))
+    }
+    res.status(200).json({
+        status: 'success',
+        data: {
+            booking
+        }
+    })
+})
+
+exports.updateBooking = catchAsync(async(req, res, next) => {
+    const booking = await Booking.findByIdAndUpdate(req.params.id, req.body, {
+        new: true,
+        runValidators: true
+    });
+
+    if (!booking) {
+        return next(new AppError('No booking found with that ID', 404))
+    }
+    res.status(200).json({
+        status: 'Success',
+        data: {
+            booking
+        }
+    })
+});
+
+exports.deleteBooking = catchAsync(async (req, res) => {
+    const booking = await Booking.findByIdAndDelete(req.params.id)
+
+    if (!booking) {
+        return next(new AppError('No booking found with that ID', 404))
+    }
+
+    res.status(204).json({
+        status: 'Success',
+        data: {}
+    })
+})
