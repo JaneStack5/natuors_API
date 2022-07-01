@@ -1,6 +1,7 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY)
 const Tour = require('../models/Tour')
 const Booking = require('../models/Bookings')
+const User = require('../models/User')
 const APIFeatures = require('../utils/apiFeatures')
 const catchAsync = require('../utils/catchAsync')
 const AppError = require('../utils/appError')
@@ -45,4 +46,15 @@ exports.createBookingCheckout = catchAsync(async (req, res, next) => {
     await Booking.create({ tour, user, price });
 
     res.redirect(req.originalUrl.split('?')[0])
+});
+
+exports.getMyTours = catchAsync(async (req, res, next) => {
+    // 1) Find all bookings
+    const bookings = await User.findByIdAndUpdate({user: req.user.id })
+
+    // 2) Find tours with the returned ids
+    const tourIDs = bookings.map(el => el.tour);
+    const tours = await Tour.find({_id: { $in: tourIDs } });
+
+    res.status(200).render('overview')
 });
