@@ -110,7 +110,6 @@ exports.restrictTO = (...roles) => {
                 new AppError('You do not have permission to perform this action', 403)
             );
         }
-        console.log(roles)
         next();
     }
 }
@@ -147,8 +146,6 @@ exports.forgotPassword = catchAsync( async(req, res, next) => {
             message: 'Token sent to email!'
         });
     } catch(e) {
-
-        //console.log(e)
 
         user.passwordResetToken = undefined;
         user.passwordResetExpires = undefined;
